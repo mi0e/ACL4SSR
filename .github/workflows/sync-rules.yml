@@ -1,0 +1,27 @@
+name: Sync Rules
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Download rule sets
+        run: |
+          bash scripts/update_rules.sh
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add rules/
+          git commit -m "chore: sync rules" || echo "No changes"
+
+      - name: Push changes
+        run: git push
