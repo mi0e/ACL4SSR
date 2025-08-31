@@ -1,3 +1,6 @@
+permissions:
+  contents: write
+
 name: Sync Rules
 
 on:
@@ -9,12 +12,12 @@ jobs:
   update:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.PAT_TOKEN }}
 
       - name: Download rule sets
-        run: |
-          bash scripts/update_rules.sh
+        run: bash scripts/update_rules.sh
 
       - name: Commit changes
         run: |
@@ -24,4 +27,7 @@ jobs:
           git commit -m "chore: sync rules" || echo "No changes"
 
       - name: Push changes
-        run: git push
+        env:
+          TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: git push https://$TOKEN@github.com/mi0e/ACL4SSR.git
+
